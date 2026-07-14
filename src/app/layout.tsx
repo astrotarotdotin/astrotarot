@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
@@ -8,6 +8,11 @@ export const metadata: Metadata = {
   title: "AstroTarot — Tarot Readings & Spiritual Guidance",
   description:
     "Book a live tarot reading, try a free AI-powered reading, or join a tarot workshop with Ishita Nag.",
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
