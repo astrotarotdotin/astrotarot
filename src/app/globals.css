@@ -1,0 +1,236 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Twilight palette — approved direction, see SYSTEM.md */
+  --void: #251c40;
+  --deep: #1e1636;
+  --chamber: #281f47;
+  --veil: #332963;
+
+  --rose: #c4608a;
+  --rose-soft: #e8a0bb;
+  --rose-glow: #f0c4d8;
+
+  --violet: #7b5ea7;
+  --violet-mid: #a07fc8;
+  --violet-bright: #c8a8f0;
+  --lavender: #ddd0f8;
+
+  --teal: #3b9e9a;
+  --teal-bright: #70d4cf;
+
+  --gold: #e8c87a;
+  --gold-dim: #bf9a48;
+  --silver: #d8d0f0;
+  --moonwhite: #f5f0ff;
+
+  --font-display: "Cinzel Decorative", serif;
+  --font-body: "Cormorant Garamond", serif;
+  --font-ui: "Raleway", sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+html {
+  scroll-behavior: smooth;
+}
+body {
+  background: linear-gradient(160deg, var(--void) 0%, var(--deep) 55%, var(--chamber) 100%);
+  color: var(--moonwhite);
+  font-family: var(--font-body);
+  font-size: 18px;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+::-webkit-scrollbar {
+  width: 4px;
+}
+::-webkit-scrollbar-track {
+  background: var(--deep);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--violet);
+  border-radius: 2px;
+}
+
+h1, h2, h3, h4, h5 {
+  font-family: var(--font-display);
+  font-weight: 400;
+  line-height: 1.2;
+  color: var(--moonwhite);
+}
+
+/* Glitter/particle canvas — kept deliberately sparse.
+   MAX_PARTICLES and ambient interval are tuned in MagicLayer.tsx —
+   do not add unthrottled particle spawns, it creates a hazy "film"
+   look over the whole page (confirmed in design review). */
+#glitter-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 9999;
+}
+
+/* Nebula background blobs — kept at low opacity intentionally.
+   Original reference used 0.18-0.28, which combined with the
+   particle canvas produced a washed-out look. Halved here. */
+.nebula-bg {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+.nebula-bg::before {
+  content: "";
+  position: absolute;
+  width: 600px;
+  height: 600px;
+  top: -200px;
+  left: -180px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(123, 94, 167, 0.14) 0%, rgba(123, 94, 167, 0.04) 45%, transparent 70%);
+  animation: nebulaShift 18s ease-in-out infinite alternate;
+}
+.nebula-bg::after {
+  content: "";
+  position: absolute;
+  width: 480px;
+  height: 480px;
+  bottom: -160px;
+  right: -140px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(196, 96, 138, 0.12) 0%, rgba(59, 158, 154, 0.05) 50%, transparent 70%);
+  animation: nebulaShift 22s ease-in-out infinite alternate-reverse;
+}
+@keyframes nebulaShift {
+  0% { transform: translate(0, 0) scale(1); }
+  100% { transform: translate(60px, 40px) scale(1.15); }
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(28px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes shimmer {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.anim-fade-up { opacity: 0; animation: fadeUp 0.7s ease forwards; }
+.anim-shimmer { animation: shimmer 3s ease-in-out infinite; }
+.anim-spin { animation: spin 20s linear infinite; }
+
+.rune-line {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  justify-content: center;
+}
+.rune-line::before,
+.rune-line::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(192, 168, 240, 0.4));
+}
+.rune-line::after {
+  background: linear-gradient(270deg, transparent, rgba(192, 168, 240, 0.4));
+}
+
+.btn-fairy {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-family: var(--font-ui);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 14px 36px;
+  cursor: pointer;
+  border: 1px solid var(--violet-mid);
+  color: var(--lavender);
+  background: rgba(123, 94, 167, 0.16);
+  transition: all 0.35s ease;
+  text-decoration: none;
+}
+.btn-fairy:hover {
+  border-color: var(--rose-soft);
+  color: var(--moonwhite);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(123, 94, 167, 0.35), 0 0 18px rgba(196, 96, 138, 0.18);
+}
+
+.btn-ghost-fairy {
+  font-family: var(--font-ui);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 12px 28px;
+  cursor: pointer;
+  border: 1px solid rgba(200, 168, 240, 0.3);
+  color: var(--silver);
+  background: transparent;
+  transition: all 0.25s ease;
+  text-decoration: none;
+}
+.btn-ghost-fairy:hover {
+  border-color: var(--violet-bright);
+  color: var(--violet-bright);
+  background: rgba(123, 94, 167, 0.08);
+}
+
+.card-fairy {
+  position: relative;
+  background: linear-gradient(135deg, #241c3e 0%, #1a1430 100%);
+  border: 1px solid rgba(200, 168, 240, 0.2);
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  overflow: hidden;
+}
+.card-fairy:hover {
+  border-color: rgba(192, 168, 240, 0.4);
+  transform: translateY(-6px);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35), 0 0 30px rgba(123, 94, 167, 0.12);
+}
+
+.badge-fairy {
+  display: inline-block;
+  font-family: var(--font-ui);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 4px 12px;
+  border-radius: 20px;
+  background: rgba(123, 94, 167, 0.25);
+  border: 1px solid rgba(192, 168, 240, 0.3);
+  color: var(--lavender);
+}
+
+.text-glow-rose {
+  color: var(--rose-soft);
+  text-shadow: 0 0 18px rgba(232, 160, 187, 0.4), 0 0 40px rgba(196, 96, 138, 0.2);
+}
+
+.page-content {
+  position: relative;
+  z-index: 1;
+}
+.section { padding: 100px 24px; }
+.section-sm { padding: 64px 24px; }
+.container { max-width: 1200px; margin: 0 auto; }
