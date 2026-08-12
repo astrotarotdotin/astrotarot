@@ -11,8 +11,8 @@
 const crypto = require("crypto");
 
 // Fill these in from your .env.local before running
-const RAZORPAY_KEY_ID = "rzp_test_TDQBxrGyOLlq77";
-const RAZORPAY_KEY_SECRET = "H4RzeE6J6sXmH3b7hXQwv0o5";
+const RAZORPAY_KEY_ID = "PASTE_YOUR_RAZORPAY_KEY_ID";
+const RAZORPAY_KEY_SECRET = "PASTE_YOUR_RAZORPAY_KEY_SECRET";
 const BASE_URL = "http://localhost:3000";
 
 async function main() {
