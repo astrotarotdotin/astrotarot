@@ -109,6 +109,7 @@ export default function AdminContentPage() {
 
   // Shop visibility
   const [shopEnabled, setShopEnabled] = useState(false);
+  const [workshopEnabled, setWorkshopEnabled] = useState(true);
 
   // ── Load all content ─────────────────────────────────────────
   useEffect(() => {
@@ -129,6 +130,8 @@ export default function AdminContentPage() {
         setAnnouncementText(c.announcement_text   ?? "");
         setAnnouncementActive(c.announcement_active === "true");
         setShopEnabled(c.shop_enabled === "true");
+        const wv = c.workshop_enabled;
+        setWorkshopEnabled(wv === undefined || wv === "true");
 
         // Testimonials stored as JSON string
         try {
@@ -272,6 +275,21 @@ export default function AdminContentPage() {
     } catch {
       showFlash("shop", false, "Failed to update.");
       setShopEnabled(!enabled); // revert on error
+    } finally {
+      setSaving(null);
+    }
+  }
+
+  async function saveWorkshopToggle(enabled: boolean) {
+    setWorkshopEnabled(enabled);
+    setSaving("workshop");
+    try {
+      const token = await getToken();
+      await saveContent(token, { workshop_enabled: String(enabled) });
+      showFlash("workshop", true, `Workshop is now ${enabled ? "visible" : "hidden"} in the public navigation.`);
+    } catch {
+      showFlash("workshop", false, "Failed to update.");
+      setWorkshopEnabled(!enabled); // revert on error
     } finally {
       setSaving(null);
     }
@@ -544,6 +562,42 @@ export default function AdminContentPage() {
           </span>
         </div>
         <FlashMsg section="shop" flash={flash} />
+      </SectionCard>
+
+      {/* ── WORKSHOP VISIBILITY ─────────────────────────────── */}
+      <SectionCard title="Workshop Visibility" subtitle="Show or hide the Workshop link in the public navigation. Turn this off when no workshop is currently running.">
+        <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 20 }}>
+          <button
+            onClick={() => saveWorkshopToggle(!workshopEnabled)}
+            disabled={saving === "workshop"}
+            style={{
+              width: 44,
+              height: 24,
+              borderRadius: 12,
+              border: "none",
+              background: workshopEnabled ? "var(--violet)" : "rgba(200,168,240,0.2)",
+              cursor: "pointer",
+              position: "relative",
+              transition: "background 0.2s",
+              flexShrink: 0,
+            }}
+          >
+            <span style={{
+              position: "absolute",
+              top: 3,
+              left: workshopEnabled ? 22 : 3,
+              width: 18,
+              height: 18,
+              borderRadius: "50%",
+              background: "var(--moonwhite)",
+              transition: "left 0.2s",
+            }} />
+          </button>
+          <span style={{ fontFamily: "var(--font-ui)", fontSize: 12, color: "var(--silver)" }}>
+            {workshopEnabled ? "Workshop is visible in public navigation" : "Workshop is hidden (still accessible via direct URL)"}
+          </span>
+        </div>
+        <FlashMsg section="workshop" flash={flash} />
       </SectionCard>
     </div>
   );
