@@ -1,9 +1,20 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 
-export default function AdminLoginPage() {
+const inputStyle: React.CSSProperties = {
+  padding: 12,
+  background: "var(--deep)",
+  border: "1px solid rgba(200,168,240,0.25)",
+  color: "var(--moonwhite)",
+  fontFamily: "var(--font-body)",
+};
+
+// ── Inner component — uses useSearchParams, must be inside <Suspense> ──
+// Next.js 15 requires any component calling useSearchParams() to be
+// wrapped in a Suspense boundary, otherwise the build fails.
+function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [email, setEmail] = useState("");
@@ -11,7 +22,6 @@ export default function AdminLoginPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // Show "session expired" banner when redirected from the global 401 handler
   const sessionExpired = searchParams.get("reason") === "expired";
 
   const handleLogin = async () => {
@@ -30,14 +40,13 @@ export default function AdminLoginPage() {
     <section className="section" style={{ maxWidth: 380, margin: "0 auto" }}>
       <div style={{ textAlign: "center", marginBottom: 32 }}>
         <div className="rune-line" style={{ marginBottom: 20 }}>
-          <span style={{ fontFamily: "var(--font-ui)", fontSize: 10, letterSpacing: "0.3em", textTransform: "uppercase", color: "var(--violet-mid)" }}>
+          <span style={{ fontFamily: "var(--font-ui)", fontSize: 12, letterSpacing: "0.3em", textTransform: "uppercase", color: "var(--violet-mid)" }}>
             Private
           </span>
         </div>
         <h1 style={{ fontSize: 26 }}>Admin Login</h1>
       </div>
 
-      {/* Session expired notice — shown when token expires mid-session */}
       {sessionExpired && (
         <div style={{
           background: "rgba(196,96,138,0.12)",
@@ -47,7 +56,7 @@ export default function AdminLoginPage() {
           marginBottom: 16,
           color: "var(--rose-soft)",
           fontFamily: "var(--font-ui)",
-          fontSize: 12,
+          fontSize: 13,
           textAlign: "center",
         }}>
           Your session expired. Please sign in again.
@@ -81,10 +90,13 @@ export default function AdminLoginPage() {
   );
 }
 
-const inputStyle: React.CSSProperties = {
-  padding: 12,
-  background: "var(--deep)",
-  border: "1px solid rgba(200,168,240,0.25)",
-  color: "var(--moonwhite)",
-  fontFamily: "var(--font-body)",
-};
+// ── Page export — wraps LoginForm in Suspense ──────────────────
+// The fallback is invisible (null) because the form renders instantly
+// client-side — Suspense is only here to satisfy Next.js 15's build requirement.
+export default function AdminLoginPage() {
+  return (
+    <Suspense fallback={null}>
+      <LoginForm />
+    </Suspense>
+  );
+}
